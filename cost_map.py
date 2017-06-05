@@ -134,6 +134,7 @@ class CostaMap:
 
         # Create the dialog (after translation) and keep reference
         self.dlg = CostaMapDialog()
+        self.dlg.button_box.accepted.connect(self.set_text)
 
         icon = QIcon(icon_path)
         action = QAction(icon, text, parent)
@@ -157,6 +158,9 @@ class CostaMap:
         self.actions.append(action)
 
         return action
+    
+    def set_text(self):
+        self.dlg.textbox.setText(str(self.iface.mapCanvas().layerCount()))
 
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
