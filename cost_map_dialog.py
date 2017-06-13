@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 /***************************************************************************
- CostaMapDialog
+ CostMapDialog
                                  A QGIS plugin
  create costmap
                              -------------------
@@ -29,10 +29,10 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'cost_map_dialog_base.ui'))
 
 
-class CostaMapDialog(QtGui.QDialog, FORM_CLASS):
+class CostMapDialog(QtGui.QDialog, FORM_CLASS):
     def __init__(self, parent=None):
         """Constructor."""
-        super(CostaMapDialog, self).__init__(parent)
+        super(CostMapDialog, self).__init__(parent)
         # Set up the user interface from Designer.
         # After setupUI you can access any designer object by doing
         # self.<objectname>, and you can use autoconnect slots - see

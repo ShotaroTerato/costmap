@@ -20,12 +20,20 @@
  *                                                                         *
  ***************************************************************************/
 """
+import processing
+import glob, qgis
+from qgis.analysis import QgsRasterCalculatorEntry, QgsRasterCalculator
+from osgeo import gdal
+from osgeo.gdalnumeric import *
+from osgeo.gdalconst import *
+import struct
+from qgis.core import *
 from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication
 from PyQt4.QtGui import QAction, QIcon
 # Initialize Qt resources from file resources.py
 import resources
 # Import the code for the dialog
-from cost_map_dialog import CostaMapDialog
+from cost_map_dialog import CostMapDialog
 import os.path
 
 
@@ -133,7 +141,7 @@ class CostaMap:
         """
 
         # Create the dialog (after translation) and keep reference
-        self.dlg = CostaMapDialog()
+        self.dlg = CostMapDialog()
         self.dlg.button_box.accepted.connect(self.set_text)
 
         icon = QIcon(icon_path)
@@ -160,7 +168,8 @@ class CostaMap:
         return action
     
     def set_text(self):
-        self.dlg.textbox.setText(str(self.iface.mapCanvas().layerCount()))
+        #self.dlg.textEdit.setText(str(self.iface.mapCanvas().layerCount()))
+        pass
 
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
@@ -194,4 +203,48 @@ class CostaMap:
         if result:
             # Do something useful here - delete the line containing pass and
             # substitute with your code.
-            pass
+            #pass
+            #x = 500
+            #y = 1000
+            #reg = QgsMapLayerRegistry.instance()
+            #rlayer = reg.mapLayers().values()[0]
+            #gdal_layer = gdal.Open(rlayer.source())
+            #band = gdal_layer.GetRasterBand(1)
+            #geotransform = gdal_layer.GetGeoTransform()
+            #print 'Origin = (',geotransform[0], ',',geotransform[3],')'
+            #print 'Pixel Size = (',geotransform[1], ',',geotransform[5],')'
+            #gdal_value = struct.unpack('b', band.ReadRaster(x, y, 1, 1, buf_type=band.DataType))[0]
+            #data1 = BandReadAsArray(band)
+            #self.dlg.textEdit.setText(data1)
+            #import csv
+            #with open('file.csv', 'wt') as f:
+            #    writer = csv.writer(f)
+            #    writer.writerows(data1)
+            #
+            #gt = gdal_layer.GetGeoTransform()
+            #xo, xs, xr, yo, yr, ys = gt
+            #
+            #band = gdal_layer.GetRasterBand(1)
+            #gdal_value = struct.unpack('f', band.ReadRaster(x, y, 1, 1, buf_type=band.DataType))[0]
+            #
+            #qgis_value = qgis_layer.dataProvider().identify(QgsPoint(xcoo, ycoo), \
+            #QgsRaster.IdentifyFroamatValue, \
+            #theExtent=QgsRectangle(xcoo, ycoo, xcoo + xs, ycoo + ys))\
+            #.results()[1]
+            #
+            #assert(gdal_value == qgis_value)
+            
+            lddLrs = qgis.utils.iface.legendInterface().layers()
+            path = "/home/tera/maps/"
+            for lyr in lddLrs:
+                entries = []
+                ras = QgsRasterCalculatorEntry()
+                ras.ref = 'map@1'
+                ras.raster = lyr
+                ras.bandNumber = 1
+                entries.append(ras)
+                formula = '(map@1 > 0.04)*map@1'
+                #calc = QgsRasterCalculator('0.5-(0.5/255)*ras@1', path + lyr.name() + "_suffix.tif", 'GTiff', lyr.extent(), lyr.width(), lyr.height(), entries)
+                calc = QgsRasterCalculator(formula, path + lyr.name() + "_test.tif", 'GTiff', lyr.extent(), lyr.width(), lyr.height(), entries)
+                calc.processCalculation()
+                break

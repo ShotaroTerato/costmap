@@ -16,18 +16,18 @@ import unittest
 
 from PyQt4.QtGui import QDialogButtonBox, QDialog
 
-from cost_map_dialog import CostaMapDialog
+from cost_map_dialog import CostMapDialog
 
 from utilities import get_qgis_app
 QGIS_APP = get_qgis_app()
 
 
-class CostaMapDialogTest(unittest.TestCase):
+class CostMapDialogTest(unittest.TestCase):
     """Test dialog works."""
 
     def setUp(self):
         """Runs before each test."""
-        self.dialog = CostaMapDialog(None)
+        self.dialog = CostMapDialog(None)
 
     def tearDown(self):
         """Runs after each test."""
@@ -49,7 +49,7 @@ class CostaMapDialogTest(unittest.TestCase):
         self.assertEqual(result, QDialog.Rejected)
 
 if __name__ == "__main__":
-    suite = unittest.makeSuite(CostaMapDialogTest)
+    suite = unittest.makeSuite(CostMapDialogTest)
     runner = unittest.TextTestRunner(verbosity=2)
     runner.run(suite)
 
