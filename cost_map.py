@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 /***************************************************************************
- CostaMap
+ CostMap
                                  A QGIS plugin
  create costmap
                               -------------------
@@ -22,6 +22,7 @@
 """
 import processing
 import glob, qgis
+import yaml
 from qgis.analysis import QgsRasterCalculatorEntry, QgsRasterCalculator
 from osgeo import gdal
 from osgeo.gdalnumeric import *
@@ -35,9 +36,10 @@ import resources
 # Import the code for the dialog
 from cost_map_dialog import CostMapDialog
 import os.path
+import os
 
 
-class CostaMap:
+class CostMap:
     """QGIS Plugin Implementation."""
 
     def __init__(self, iface):
@@ -57,7 +59,7 @@ class CostaMap:
         locale_path = os.path.join(
             self.plugin_dir,
             'i18n',
-            'CostaMap_{}.qm'.format(locale))
+            'CostMap_{}.qm'.format(locale))
 
         if os.path.exists(locale_path):
             self.translator = QTranslator()
@@ -71,8 +73,8 @@ class CostaMap:
         self.actions = []
         self.menu = self.tr(u'&cost map')
         # TODO: We are going to let the user set this up in a future iteration
-        self.toolbar = self.iface.addToolBar(u'CostaMap')
-        self.toolbar.setObjectName(u'CostaMap')
+        self.toolbar = self.iface.addToolBar(u'CostMap')
+        self.toolbar.setObjectName(u'CostMap')
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -87,7 +89,7 @@ class CostaMap:
         :rtype: QString
         """
         # noinspection PyTypeChecker,PyArgumentList,PyCallByClass
-        return QCoreApplication.translate('CostaMap', message)
+        return QCoreApplication.translate('CostMap', message)
 
 
     def add_action(
@@ -168,13 +170,17 @@ class CostaMap:
         return action
     
     def set_text(self):
+        current_dir = os.getcwd()
+        f = open(current_dir + "/.qgis2/python/plugins/CostMap/robot_params.yaml", "r+")
+        data = yaml.load(f)
+        self.dlg.textEdit.setText(str(data))
         #self.dlg.textEdit.setText(str(self.iface.mapCanvas().layerCount()))
-        pass
+        #pass
 
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
 
-        icon_path = ':/plugins/CostaMap/icon.png'
+        icon_path = ':/plugins/CostMap/icon.png'
         self.add_action(
             icon_path,
             text=self.tr(u'costmap'),
@@ -204,47 +210,22 @@ class CostaMap:
             # Do something useful here - delete the line containing pass and
             # substitute with your code.
             #pass
-            #x = 500
-            #y = 1000
-            #reg = QgsMapLayerRegistry.instance()
-            #rlayer = reg.mapLayers().values()[0]
-            #gdal_layer = gdal.Open(rlayer.source())
-            #band = gdal_layer.GetRasterBand(1)
-            #geotransform = gdal_layer.GetGeoTransform()
-            #print 'Origin = (',geotransform[0], ',',geotransform[3],')'
-            #print 'Pixel Size = (',geotransform[1], ',',geotransform[5],')'
-            #gdal_value = struct.unpack('b', band.ReadRaster(x, y, 1, 1, buf_type=band.DataType))[0]
-            #data1 = BandReadAsArray(band)
-            #self.dlg.textEdit.setText(data1)
-            #import csv
-            #with open('file.csv', 'wt') as f:
-            #    writer = csv.writer(f)
-            #    writer.writerows(data1)
-            #
-            #gt = gdal_layer.GetGeoTransform()
-            #xo, xs, xr, yo, yr, ys = gt
-            #
-            #band = gdal_layer.GetRasterBand(1)
-            #gdal_value = struct.unpack('f', band.ReadRaster(x, y, 1, 1, buf_type=band.DataType))[0]
-            #
-            #qgis_value = qgis_layer.dataProvider().identify(QgsPoint(xcoo, ycoo), \
-            #QgsRaster.IdentifyFroamatValue, \
-            #theExtent=QgsRectangle(xcoo, ycoo, xcoo + xs, ycoo + ys))\
-            #.results()[1]
-            #
-            #assert(gdal_value == qgis_value)
             
-            lddLrs = qgis.utils.iface.legendInterface().layers()
-            path = "/home/tera/maps/"
-            for lyr in lddLrs:
-                entries = []
-                ras = QgsRasterCalculatorEntry()
-                ras.ref = 'map@1'
-                ras.raster = lyr
-                ras.bandNumber = 1
-                entries.append(ras)
-                formula = '(map@1 > 0.04)*map@1'
-                #calc = QgsRasterCalculator('0.5-(0.5/255)*ras@1', path + lyr.name() + "_suffix.tif", 'GTiff', lyr.extent(), lyr.width(), lyr.height(), entries)
-                calc = QgsRasterCalculator(formula, path + lyr.name() + "_test.tif", 'GTiff', lyr.extent(), lyr.width(), lyr.height(), entries)
-                calc.processCalculation()
-                break
+            formula = []
+            formula.append('(map@1 > 0.04)*map@1')
+            self.calc(formula[0])
+            
+    def calc(self, formula):
+        lddLrs = qgis.utils.iface.legendInterface().layers()
+        path = "/home/tera/maps/"
+        for lyr in lddLrs:
+            entries = []
+            ras = QgsRasterCalculatorEntry()
+            ras.ref = 'map'
+            ras.raster = lyr
+            ras.bandNumber = 1
+            #formula = '(map@1 > 0.04)*map@1'
+            entries.append(ras)
+            #calc = QgsRasterCalculator('0.5-(0.5/255)*ras@1', path + lyr.name() + "_suffix.tif", 'GTiff', lyr.extent(), lyr.width(), lyr.height(), entries)
+            calc = QgsRasterCalculator(formula, path + lyr.name() + "_test.tif", 'GTiff', lyr.extent(), lyr.width(), lyr.height(), entries)
+            calc.processCalculation()

@@ -1,5 +1,5 @@
 #/***************************************************************************
-# CostaMap
+# CostMap
 #
 # create costmap
 #							 -------------------
@@ -40,7 +40,7 @@ SOURCES = \
 	__init__.py \
 	cost_map.py cost_map_dialog.py
 
-PLUGINNAME = CostaMap
+PLUGINNAME = CostMap
 
 PY_FILES = \
 	__init__.py \

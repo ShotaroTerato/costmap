@@ -1,0 +1,5 @@
+name: icart_mini
+
+required_elements: elevation, occupancy_grid
+elevation: '(map > 0.04) * map'
+occupancy_grid: '(map > 0) * map'

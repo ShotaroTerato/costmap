@@ -31,12 +31,12 @@ class CostMapDialogTest(unittest.TestCase):
 
     def test_icon_png(self):
         """Test we can click OK."""
-        path = ':/plugins/CostaMap/icon.png'
+        path = ':/plugins/CostMap/icon.png'
         icon = QIcon(path)
         self.assertFalse(icon.isNull())
 
 if __name__ == "__main__":
-    suite = unittest.makeSuite(CostaMapResourcesTest)
+    suite = unittest.makeSuite(CostMapResourcesTest)
     runner = unittest.TextTestRunner(verbosity=2)
     runner.run(suite)
 

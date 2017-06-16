@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 /***************************************************************************
- CostaMap
+ CostMap
                                  A QGIS plugin
  create costmap
                              -------------------
@@ -25,11 +25,11 @@
 
 # noinspection PyPep8Naming
 def classFactory(iface):  # pylint: disable=invalid-name
-    """Load CostaMap class from file CostaMap.
+    """Load CostMap class from file CostMap.
 
     :param iface: A QGIS interface instance.
     :type iface: QgsInterface
     """
     #
-    from .cost_map import CostaMap
-    return CostaMap(iface)
+    from .cost_map import CostMap
+    return CostMap(iface)

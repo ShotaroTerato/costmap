@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/plugins/CostaMap" >
+    <qresource prefix="/plugins/CostMap" >
         <file>icon.png</file>
     </qresource>
 </RCC>

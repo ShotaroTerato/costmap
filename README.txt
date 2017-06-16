@@ -1,7 +1,7 @@
 Plugin Builder Results
 
-Your plugin CostaMap was created in:
-    /home/tera/.qgis2/python/plugins/CostaMap
+Your plugin CostMap was created in:
+    /home/tera/.qgis2/python/plugins/CostMap
 
 Your QGIS plugin directory is located at:
     /home/tera/.qgis2/python/plugins
@@ -21,7 +21,7 @@ What's Next:
 
   * Create your own custom icon, replacing the default icon.png
 
-  * Modify your user interface by opening CostaMap.ui in Qt Designer
+  * Modify your user interface by opening CostMap.ui in Qt Designer
 
   * You can use the Makefile to compile your Ui and resource files when
     you make changes. This requires GNU make (gmake)
