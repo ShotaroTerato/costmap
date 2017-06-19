@@ -199,7 +199,9 @@ class CostMap:
         del self.toolbar
 
 
+    calc_results = []
     def run(self):
+        global calc_results
         """Run method that performs all the real work"""
         # show the dialog
         self.dlg.show()
@@ -219,7 +221,12 @@ class CostMap:
                 formula = maps[map_name]
                 self.calc(map_name, formula)
             
+            output = self.calc_results[0]
+            for rst in range(len(self.calc_results)-1):
+                output = self.sum_calc(output, self.calc_results[rst+1])
+    
     def calc(self, map_name, formula):
+        global calc_results
         layer = QgsMapLayerRegistry.instance().mapLayersByName(map_name)
         path = "/home/tera/maps/"
         
@@ -231,3 +238,23 @@ class CostMap:
         entries.append(ras)
         calc = QgsRasterCalculator(formula, path + layer[0].name() + "_test.tif", 'GTiff', layer[0].extent(), layer[0].width(), layer[0].height(), entries)
         calc.processCalculation()
+        self.calc_results.append(QgsRasterLayer(path + layer[0].name() + "_test.tif", layer[0].name()+"_test.tif"))
+    
+    def sum_calc(self, result1, result2):
+        entries = []
+        ras1 = QgsRasterCalculatorEntry()
+        ras1.ref = 'result@1'
+        ras1.raster = result1
+        ras1.bandNumber = 1
+        entries.append(ras1)
+        
+        ras2 = QgsRasterCalculatorEntry()
+        ras2.ref = 'result@2'
+        ras2.raster = result2
+        ras2.bandNumber = 1
+        entries.append(ras2)
+        
+        sum_culc = QgsRasterCalculator( 'result@1 + result@2', '/home/tera/outputfile.tif', 'GTiff', result1.extent(), result1.width(), result1.height(), entries)
+        sum_culc.processCalculation()
+        out = QgsRasterLayer("/home/tera/outputfile.tif", "outputfile.tif")
+        return out
