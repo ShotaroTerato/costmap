@@ -1,5 +1,5 @@
 name: icart_mini
 
-required_elements: elevation, occupancy_grid
-elevation: '(map > 0.04) * map'
-occupancy_grid: '(map > 0) * map'
+required_maps:
+  cit_ele_0to05_modified_suffix: '(map@1 > 0.04) * map@1'
+  cit_raster_image_edit_modified: '(map@1 > 0) * map@1'

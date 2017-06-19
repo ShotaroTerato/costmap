@@ -170,12 +170,12 @@ class CostMap:
         return action
     
     def set_text(self):
-        current_dir = os.getcwd()
-        f = open(current_dir + "/.qgis2/python/plugins/CostMap/robot_params.yaml", "r+")
-        data = yaml.load(f)
-        self.dlg.textEdit.setText(str(data))
+        #current_dir = os.getcwd()
+        #f = open(current_dir + "/.qgis2/python/plugins/CostMap/robot_params.yaml", "r+")
+        #data = yaml.load(f)
+        #self.dlg.textEdit.setText(str(data))
         #self.dlg.textEdit.setText(str(self.iface.mapCanvas().layerCount()))
-        #pass
+        pass
 
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
@@ -210,22 +210,24 @@ class CostMap:
             # Do something useful here - delete the line containing pass and
             # substitute with your code.
             #pass
+            current_dir = os.getcwd()
+            f = open(current_dir + "/.qgis2/python/plugins/CostMap/robot_params.yaml", "r+")
+            data = yaml.load(f)
+            maps = data['required_maps']
+            for k in maps.keys():
+                map_name = k
+                formula = maps[map_name]
+                self.calc(map_name, formula)
             
-            formula = []
-            formula.append('(map@1 > 0.04)*map@1')
-            self.calc(formula[0])
-            
-    def calc(self, formula):
-        lddLrs = qgis.utils.iface.legendInterface().layers()
+    def calc(self, map_name, formula):
+        layer = QgsMapLayerRegistry.instance().mapLayersByName(map_name)
         path = "/home/tera/maps/"
-        for lyr in lddLrs:
-            entries = []
-            ras = QgsRasterCalculatorEntry()
-            ras.ref = 'map'
-            ras.raster = lyr
-            ras.bandNumber = 1
-            #formula = '(map@1 > 0.04)*map@1'
-            entries.append(ras)
-            #calc = QgsRasterCalculator('0.5-(0.5/255)*ras@1', path + lyr.name() + "_suffix.tif", 'GTiff', lyr.extent(), lyr.width(), lyr.height(), entries)
-            calc = QgsRasterCalculator(formula, path + lyr.name() + "_test.tif", 'GTiff', lyr.extent(), lyr.width(), lyr.height(), entries)
-            calc.processCalculation()
+        
+        entries = []
+        ras = QgsRasterCalculatorEntry()
+        ras.ref = 'map@1'
+        ras.raster = layer[0]
+        ras.bandNumber = 1
+        entries.append(ras)
+        calc = QgsRasterCalculator(formula, path + layer[0].name() + "_test.tif", 'GTiff', layer[0].extent(), layer[0].width(), layer[0].height(), entries)
+        calc.processCalculation()
