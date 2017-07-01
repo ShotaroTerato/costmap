@@ -28,6 +28,8 @@ from osgeo import gdal
 from osgeo.gdalnumeric import *
 from osgeo.gdalconst import *
 import struct
+from numpy import *
+import numpy as np
 from qgis.core import *
 from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication
 from PyQt4.QtGui import QAction, QIcon
@@ -202,6 +204,11 @@ class CostMap:
     calc_results = []
     def run(self):
         global calc_results
+        global size_x
+        global size_y
+        global size_z
+        global max_speed
+        global min_speed
         """Run method that performs all the real work"""
         # show the dialog
         self.dlg.show()
@@ -211,34 +218,67 @@ class CostMap:
         if result:
             # Do something useful here - delete the line containing pass and
             # substitute with your code.
-            #pass
             current_dir = os.getcwd()
             f = open(current_dir + "/.qgis2/python/plugins/CostMap/robot_params.yaml", "r+")
             data = yaml.load(f)
-            maps = data['required_maps']
-            for k in maps.keys():
-                map_name = k
-                formula = maps[map_name]
-                self.calc(map_name, formula)
+            size_x = data['robot_size']['x']
+            size_y = data['robot_size']['y']
+            size_z = data['robot_size']['z']
+            max_speed = data['max_speed']
+            min_speed = data['min_speed']
+            attributes = data['attributes']
+            for i in attributes.keys():
+                attribute_name = i
+                threshold = attributes[attribute_name]['threshold']
+                speed = attributes[attribute_name]['speed']
+                self.calc(attribute_name, threshold, speed)
             
             output = self.calc_results[0]
-            for rst in range(len(self.calc_results)-1):
-                output = self.sum_calc(output, self.calc_results[rst+1])
+            #for rst in range(len(self.calc_results)-1):
+            #    output = self.sum_calc(output, self.calc_results[rst+1])
     
-    def calc(self, map_name, formula):
-        global calc_results
-        layer = QgsMapLayerRegistry.instance().mapLayersByName(map_name)
-        path = "/home/tera/maps/"
-        
-        entries = []
-        ras = QgsRasterCalculatorEntry()
-        ras.ref = 'map@1'
-        ras.raster = layer[0]
-        ras.bandNumber = 1
-        entries.append(ras)
-        calc = QgsRasterCalculator(formula, path + layer[0].name() + "_test.tif", 'GTiff', layer[0].extent(), layer[0].width(), layer[0].height(), entries)
-        calc.processCalculation()
-        self.calc_results.append(QgsRasterLayer(path + layer[0].name() + "_test.tif", layer[0].name()+"_test.tif"))
+    def calc(self, attribute_name, threshold, speed):
+        layer = QgsMapLayerRegistry.instance().mapLayersByName(attribute_name)
+        if len(layer) != 0:
+            path = "/home/tera/maps/"
+            
+            #entries = []
+            #ras = QgsRasterCalculatorEntry()
+            #ras.ref = 'map@1'
+            #ras.raster = layer[0]
+            #ras.bandNumber = 1
+            #entries.append(ras)
+            #calc = QgsRasterCalculator(formula, path + layer[0].name() + "_test.tif", 'GTiff', layer[0].extent(), layer[0].width(), layer[0].height(), entries)
+            #calc.processCalculation()
+            #self.calc_results.append(QgsRasterLayer(path + layer[0].name() + "_test.tif", layer[0].name()+"_test.tif"))
+            
+            gdal_layer = gdal.Open(layer[0].source())
+            maparray = np.array(gdal_layer.GetRasterBand(1).ReadAsArray())
+            maplist = maparray.tolist()
+            for i in range(maparray.shape[0]):
+                for j in range(maparray.shape[1]):
+                    if maplist[i][j] > threshold:
+                        maplist[i][j] = max_speed - speed
+                    else:
+                        maplist[i][j] = max_speed - max_speed
+            maparray2 = np.array(maplist)
+            dst_filename = path + layer[0].name() + '_cost.tif'
+            x_pixels = maparray.shape[0]
+            y_pixels = maparray.shape[1]
+            driver = gdal.GetDriverByName('GTiff')
+            outlayer = driver.Create(
+               dst_filename,
+               y_pixels,
+               x_pixels,
+               1,
+               gdal.GDT_Float32, )
+            outlayer.GetRasterBand(1).WriteArray(maparray2)
+            outlayer.SetGeoTransform(gdal_layer.GetGeoTransform())
+            outlayer.SetProjection(gdal_layer.GetProjection())
+            outlayer.FlushCache()
+            self.calc_results.append(dst_filename)
+        else:
+            pass
     
     def sum_calc(self, result1, result2):
         entries = []

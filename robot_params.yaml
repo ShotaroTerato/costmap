@@ -1,24 +1,26 @@
 name: icart_mini
 moving_mechanism: parallel_two_wheel
 
-capacity:
-  robot_size:
-    x: 0.5
-    y: 0.5
-    z: 0.5
-  max_speed: 0.4
-  min_speed: 0.0
-  
-  element:
-    step: 
-      threshold: 0.04
-      speed: 0.0
-    lawn: 
-      threshold: 0.0
-      speed: 0.2
-    slope: 
-      threshold: 0
-      speed: 0.0
+robot_size:
+  x: 0.5
+  y: 0.5
+  z: 0.5
+max_speed: 0.4
+min_speed: 0.0
+
+attributes:
+  elevation:
+    threshold: 0.04
+    speed: 0.0
+  obstacle:
+    threshold: 0.0
+    speed: 0.0
+  lawn: 
+    threshold: 0.0
+    speed: 0.2
+  slope: 
+    threshold: 0.0
+    speed: 0.0
 
 required_maps:
   cit_ele_0to05_modified_suffix: '(map@1 < 0.04) * map@1 * (0.2 / 0.04)'
