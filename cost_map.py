@@ -33,6 +33,9 @@ import numpy as np
 from qgis.core import *
 from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication
 from PyQt4.QtGui import QAction, QIcon
+from qgis.PyQt.QtCore import *
+from qgis.PyQt.QtGui import *
+from qgis.PyQt.QtWidgets import *
 # Initialize Qt resources from file resources.py
 import resources
 # Import the code for the dialog
@@ -234,23 +237,13 @@ class CostMap:
                 self.calc(attribute_name, threshold, speed)
             
             output = self.calc_results[0]
-            #for rst in range(len(self.calc_results)-1):
-            #    output = self.sum_calc(output, self.calc_results[rst+1])
+            for rst in range(len(self.calc_results)-1):
+                output = self.merge_layer(output, self.calc_results[rst+1])
     
     def calc(self, attribute_name, threshold, speed):
         layer = QgsMapLayerRegistry.instance().mapLayersByName(attribute_name)
         if len(layer) != 0:
             path = "/home/tera/maps/"
-            
-            #entries = []
-            #ras = QgsRasterCalculatorEntry()
-            #ras.ref = 'map@1'
-            #ras.raster = layer[0]
-            #ras.bandNumber = 1
-            #entries.append(ras)
-            #calc = QgsRasterCalculator(formula, path + layer[0].name() + "_test.tif", 'GTiff', layer[0].extent(), layer[0].width(), layer[0].height(), entries)
-            #calc.processCalculation()
-            #self.calc_results.append(QgsRasterLayer(path + layer[0].name() + "_test.tif", layer[0].name()+"_test.tif"))
             
             gdal_layer = gdal.Open(layer[0].source())
             maparray = np.array(gdal_layer.GetRasterBand(1).ReadAsArray())
@@ -280,21 +273,23 @@ class CostMap:
         else:
             pass
     
-    def sum_calc(self, result1, result2):
+    def merge_layer(self, result1, result2):
+        map1 = QgsRasterLayer(result1, QFileInfo(result1).baseName())
         entries = []
         ras1 = QgsRasterCalculatorEntry()
-        ras1.ref = 'result@1'
-        ras1.raster = result1
+        ras1.ref = 'result1@1'
+        ras1.raster = map1
         ras1.bandNumber = 1
         entries.append(ras1)
         
+        map2 = QgsRasterLayer(result2, QFileInfo(result2).baseName())
         ras2 = QgsRasterCalculatorEntry()
-        ras2.ref = 'result@2'
-        ras2.raster = result2
+        ras2.ref = 'result2@1'
+        ras2.raster = map2
         ras2.bandNumber = 1
         entries.append(ras2)
         
-        sum_culc = QgsRasterCalculator( 'result@1 + result@2', '/home/tera/outputfile.tif', 'GTiff', result1.extent(), result1.width(), result1.height(), entries)
+        sum_culc = QgsRasterCalculator('(("result1@1">"result2@1")*"result1@1")+(("result2@1">"result1@1")*"result2@1")', '/home/tera/maps/cost_map.tif', 'GTiff', map1.extent(), map1.width(), map1.height(), entries)
         sum_culc.processCalculation()
-        out = QgsRasterLayer("/home/tera/outputfile.tif", "outputfile.tif")
+        out = QgsRasterLayer("/home/tera/maps/cost_map.tif", "cost_map.tif")
         return out
