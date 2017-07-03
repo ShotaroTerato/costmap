@@ -31,11 +31,11 @@ import struct
 from numpy import *
 import numpy as np
 from qgis.core import *
-from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication
-from PyQt4.QtGui import QAction, QIcon
 from qgis.PyQt.QtCore import *
 from qgis.PyQt.QtGui import *
 from qgis.PyQt.QtWidgets import *
+from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication
+from PyQt4.QtGui import QAction, QIcon
 # Initialize Qt resources from file resources.py
 import resources
 # Import the code for the dialog
@@ -239,6 +239,9 @@ class CostMap:
             output = self.calc_results[0]
             for rst in range(len(self.calc_results)-1):
                 output = self.merge_layer(output, self.calc_results[rst+1])
+            
+            cost_layer = QgsRasterLayer('/home/tera/maps/cost_map.tif', 'cost_map')
+            QgsMapLayerRegistry.instance().addMapLayer(cost_layer)
     
     def calc(self, attribute_name, threshold, speed):
         layer = QgsMapLayerRegistry.instance().mapLayersByName(attribute_name)

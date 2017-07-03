@@ -21,6 +21,21 @@ attributes:
   slope: 
     threshold: 0.0
     speed: 0.0
+  pond:
+    threshold: 0.0
+    speed: 0.0
+  rain:
+    threshold: 0.0
+    speed: 0.2
+  gravel:
+    threshold: 0.0
+    speed: 0.2
+  sand:
+    threshold: 0.0
+    speed: 0.2
+  mud:
+    threshold: 0.0
+    speed: 0.2
 
 required_maps:
   cit_ele_0to05_modified_suffix: '(map@1 < 0.04) * map@1 * (0.2 / 0.04)'
