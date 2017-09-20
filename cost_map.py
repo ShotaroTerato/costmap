@@ -233,8 +233,8 @@ class CostMap:
             for i in attributes.keys():
                 attribute_name = i
                 threshold = attributes[attribute_name]['threshold']
-                speed = attributes[attribute_name]['speed']
-                self.calc(attribute_name, threshold, speed)
+                risk = attributes[attribute_name]['risk']
+                self.calc(attribute_name, threshold, risk*(-1))
             
             output = self.calc_results[0]
             for rst in range(len(self.calc_results)-1):
@@ -243,7 +243,7 @@ class CostMap:
             cost_layer = QgsRasterLayer('/home/tera/maps/cost_map.tif', 'cost_map')
             QgsMapLayerRegistry.instance().addMapLayer(cost_layer)
     
-    def calc(self, attribute_name, threshold, speed):
+    def calc(self, attribute_name, threshold, risk):
         layer = QgsMapLayerRegistry.instance().mapLayersByName(attribute_name)
         if len(layer) != 0:
             path = "/home/tera/maps/"
@@ -254,7 +254,7 @@ class CostMap:
             for i in range(maparray.shape[0]):
                 for j in range(maparray.shape[1]):
                     if maplist[i][j] > threshold:
-                        maplist[i][j] = max_speed - speed
+                        maplist[i][j] = max_speed - risk
                     else:
                         maplist[i][j] = max_speed - max_speed
             maparray2 = np.array(maplist)
@@ -293,6 +293,8 @@ class CostMap:
         entries.append(ras2)
         
         sum_culc = QgsRasterCalculator('(("result1@1">"result2@1")*"result1@1")+(("result2@1">"result1@1")*"result2@1")', '/home/tera/maps/cost_map.tif', 'GTiff', map1.extent(), map1.width(), map1.height(), entries)
+        #sum_culc = QgsRasterCalculator('(("result1@1">"result2@1")*"result2@1")+(("result2@1">"result1@1")*"result1@1")', '/home/tera/maps/cost_map.tif', 'GTiff', map1.extent(), map1.width(), map1.height(), entries)
         sum_culc.processCalculation()
-        out = QgsRasterLayer("/home/tera/maps/cost_map.tif", "cost_map.tif")
-        return out
+        out = QgsRasterLayer("/home/tera/maps/cost_map.tif", "cost_map")
+        out_filePath = out.publicSource()
+        return out_filePath

@@ -11,33 +11,33 @@ min_speed: 0.0
 attributes:
   elevation:
     threshold: 0.04
-    speed: 0.0
-  obstacle:
-    threshold: 0.0
-    speed: 0.0
+    risk: -0.0
+  noentry:
+    threshold: 0.1
+    risk: -0.0
   lawn: 
-    threshold: 0.0
-    speed: 0.2
-  slope: 
-    threshold: 0.0
-    speed: 0.0
-  pond:
-    threshold: 0.0
-    speed: 0.0
-  rain:
-    threshold: 0.0
-    speed: 0.2
-  gravel:
-    threshold: 0.0
-    speed: 0.2
-  sand:
-    threshold: 0.0
-    speed: 0.2
-  mud:
-    threshold: 0.0
-    speed: 0.2
+    threshold: 0.1
+    risk: -0.2
+  #slope: 
+  #  threshold: 0.0
+  #  speed: 0.0
+  #pond:
+  #  threshold: 0.0
+  #  speed: 0.0
+  #rain:
+  #  threshold: 0.0
+  #  speed: 0.2
+  #gravel:
+  #  threshold: 0.0
+  #  speed: 0.2
+  #sand:
+  #  threshold: 0.0
+  #  speed: 0.2
+  #mud:
+  #  threshold: 0.0
+  #  speed: 0.2
 
-required_maps:
-  cit_ele_0to05_modified_suffix: '(map@1 < 0.04) * map@1 * (0.2 / 0.04)'
-  cit_ele_0to05_modified_suffix2: '(map@1 > 0.04) * (0.4)'
-  cit_raster_image_edit_modified: '(0.4 - (map@1 > 0) * 0.4)'
+#required_maps:
+#  cit_ele_0to05_modified_suffix: '(map@1 < 0.04) * map@1 * (0.2 / 0.04)'
+#  cit_ele_0to05_modified_suffix2: '(map@1 > 0.04) * (0.4)'
+#  cit_raster_image_edit_modified: '(0.4 - (map@1 > 0) * 0.4)'
