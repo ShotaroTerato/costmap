@@ -234,7 +234,7 @@ class CostMap:
                 attribute_name = i
                 threshold = attributes[attribute_name]['threshold']
                 risk = attributes[attribute_name]['risk']
-                self.calc(attribute_name, threshold, risk*(-1))
+                self.calc(attribute_name, threshold, risk)
             
             output = self.calc_results[0]
             for rst in range(len(self.calc_results)-1):
@@ -254,7 +254,7 @@ class CostMap:
             for i in range(maparray.shape[0]):
                 for j in range(maparray.shape[1]):
                     if maplist[i][j] > threshold:
-                        maplist[i][j] = max_speed - risk
+                        maplist[i][j] = risk
                     else:
                         maplist[i][j] = max_speed - max_speed
             maparray2 = np.array(maplist)

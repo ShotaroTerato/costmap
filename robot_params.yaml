@@ -11,13 +11,13 @@ min_speed: 0.0
 attributes:
   elevation:
     threshold: 0.04
-    risk: -0.0
+    risk: 0.4
   noentry:
     threshold: 0.1
-    risk: -0.0
+    risk: 0.4
   lawn: 
     threshold: 0.1
-    risk: -0.2
+    risk: 0.0
   #slope: 
   #  threshold: 0.0
   #  speed: 0.0
