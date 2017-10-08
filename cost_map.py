@@ -149,7 +149,6 @@ class CostMap:
 
         # Create the dialog (after translation) and keep reference
         self.dlg = CostMapDialog()
-        self.dlg.button_box.accepted.connect(self.set_text)
 
         icon = QIcon(icon_path)
         action = QAction(icon, text, parent)
@@ -250,7 +249,8 @@ class CostMap:
     def calc(self, attribute_name, threshold, cost):
         layer = QgsMapLayerRegistry.instance().mapLayersByName(attribute_name)
         if len(layer) != 0:
-            path = "/home/tera/maps/"
+            #path = "/home/tera/maps/"
+            output_dir = self.dlg.lineEdit_2.text()
             
             gdal_layer = gdal.Open(layer[0].source())
             maparray = np.array(gdal_layer.GetRasterBand(1).ReadAsArray())
@@ -262,7 +262,7 @@ class CostMap:
                     else:
                         maplist[i][j] = max_speed - max_speed
             maparray2 = np.array(maplist)
-            dst_filename = path + layer[0].name() + '_cost.tif'
+            dst_filename = output_dir + '/' + layer[0].name() + '_cost.tif'
             x_pixels = maparray.shape[0]
             y_pixels = maparray.shape[1]
             driver = gdal.GetDriverByName('GTiff')
