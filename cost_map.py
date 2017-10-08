@@ -191,7 +191,11 @@ class CostMap:
             text=self.tr(u'costmap'),
             callback=self.run,
             parent=self.iface.mainWindow())
+        
+        self.dlg.toolButton.clicked.connect(self.selectFile)
 
+    def selectFile(self):
+        self.dlg.lineEdit.setText(QFileDialog.getOpenFileName())
 
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
@@ -202,7 +206,6 @@ class CostMap:
             self.iface.removeToolBarIcon(action)
         # remove the toolbar
         del self.toolbar
-
 
     calc_results = []
     def run(self):
@@ -221,8 +224,10 @@ class CostMap:
         if result:
             # Do something useful here - delete the line containing pass and
             # substitute with your code.
-            current_dir = os.getcwd()
-            f = open(current_dir + "/.qgis2/python/plugins/CostMap/robot_params.yaml", "r+")
+            #current_dir = os.getcwd()
+            #f = open(current_dir + "/.qgis2/python/plugins/CostMap/robot_params.yaml", "r+")
+            filepath = self.dlg.lineEdit.text()
+            f = open(filepath, "r+")
             data = yaml.load(f)
             size_x = data['robot_size']['x']
             size_y = data['robot_size']['y']
@@ -298,3 +303,4 @@ class CostMap:
         out = QgsRasterLayer("/home/tera/maps/cost_map.tif", "cost_map")
         out_filePath = out.publicSource()
         return out_filePath
+    
