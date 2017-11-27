@@ -10,14 +10,14 @@ min_speed: 0.0
 
 attributes:
   elevation:
-    threshold: 0.04
+    threshold: 0.02
     cost: 0.4
-  noentry:
+  #noentry:
+  #  threshold: 0.1
+  #  cost: 0.4
+  unpaved: 
     threshold: 0.1
-    cost: 0.4
-  lawn: 
-    threshold: 0.1
-    cost: 0.0
+    cost: 0.2
   #slope: 
   #  threshold: 0.0
   #  speed: 0.0

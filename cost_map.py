@@ -222,6 +222,8 @@ class CostMap:
             # substitute with your code.
             #current_dir = os.getcwd()
             #f = open(current_dir + "/.qgis2/python/plugins/CostMap/robot_params.yaml", "r+")
+
+            # load yaml file
             filepath = self.dlg.lineEdit.text()
             f = open(filepath, "r+")
             data = yaml.load(f)
@@ -246,6 +248,7 @@ class CostMap:
             cost_layer = QgsRasterLayer(output_dir + '/cost_map.tif', 'cost_map')
             QgsMapLayerRegistry.instance().addMapLayer(cost_layer)
     
+    # attribute value to cost value 
     def calc(self, attribute_name, threshold, cost):
         layer = QgsMapLayerRegistry.instance().mapLayersByName(attribute_name)
         if len(layer) != 0:
@@ -257,7 +260,7 @@ class CostMap:
             maplist = maparray.tolist()
             for i in range(maparray.shape[0]):
                 for j in range(maparray.shape[1]):
-                    if maplist[i][j] > threshold:
+                    if round(maplist[i][j], 2) > threshold:
                         maplist[i][j] = cost
                     else:
                         maplist[i][j] = max_speed - max_speed
@@ -280,6 +283,7 @@ class CostMap:
         else:
             pass
     
+    # merge layers
     def merge_layer(self, result1, result2):
         map1 = QgsRasterLayer(result1, QFileInfo(result1).baseName())
         entries = []
